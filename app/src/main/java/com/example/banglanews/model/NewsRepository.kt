@@ -1,5 +1,7 @@
 package com.example.banglanews.model
 
+import android.util.Log
+
 class NewsRepository(private val apiService: NewsApiService) {
     suspend fun getNews(category: String): List<NewsArticle> {
         return try {
@@ -8,6 +10,7 @@ class NewsRepository(private val apiService: NewsApiService) {
                 category = category
             ).results ?: emptyList()
         } catch (e: Exception) {
+            Log.e("NewsRepository", "Error: $e")
             e.printStackTrace()
             emptyList()
         }
