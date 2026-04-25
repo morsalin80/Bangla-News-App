@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.banglanews.model.NewsArticle
 import com.example.banglanews.model.NewsRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,11 +20,22 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private var currentFetchJob: Job? = null
+
     fun fetchNews(category: String) {
-        viewModelScope.launch {
+        // Cancel any previous fetch request to prevent race conditions
+        currentFetchJob?.cancel()
+
+        currentFetchJob = viewModelScope.launch {
+            // Clear old data immediately to prevent showing stale data
+            _articles.value = emptyList()
             _isLoading.value = true
-            _articles.value = repository.getNews(category)
-            _isLoading.value = false
+
+            try {
+                _articles.value = repository.getNews(category)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }
