@@ -24,6 +24,10 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,7 +68,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun NewsApp(viewModel: NewsViewModel) {
     val articles by viewModel.articles.collectAsState()
@@ -128,14 +132,18 @@ fun NewsApp(viewModel: NewsViewModel) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             } else {
-            LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    items(articles) { article ->
-                        NewsCard(article)
+                val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
+                    viewModel.fetchNews(selectedCategory)
+                })
+                Box(modifier = Modifier.fillMaxSize().pullRefresh(refreshState)) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(articles) { article ->
+                            NewsCard(article)
+                        }
                     }
+                    PullRefreshIndicator(isLoading, refreshState, Modifier.align(Alignment.TopCenter))
                 }
             }
         }

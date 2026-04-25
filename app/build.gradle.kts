@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.accompanist.swiperefresh)
     implementation(libs.androidx.lifecycle.runtime.ktx.v260)
     implementation(libs.androidx.activity.compose.v160)
     implementation(libs.androidx.ui.v140)
