@@ -120,7 +120,7 @@ fun NewsApp(viewModel: NewsViewModel) {
                 text = "${selectedCategory.replaceFirstChar { it.uppercase() }} News",
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(vertical = 16.dp, horizontal = 16.dp)
             )
 
             if (isLoading) {
